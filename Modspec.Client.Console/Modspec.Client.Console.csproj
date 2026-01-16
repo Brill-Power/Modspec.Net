@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Modspec.Client.FluentModbus/Modspec.Client.FluentModbus.csproj" />
+    <ProjectReference Include="../Modspec.Client/Modspec.Client.csproj" />
+    <ProjectReference Include="../Modspec.Model/Modspec.Model.csproj" />
+  </ItemGroup>
+
+</Project>

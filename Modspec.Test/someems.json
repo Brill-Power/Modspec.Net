@@ -1,0 +1,377 @@
+{
+    "name": "SomeEms",
+    "counts": [
+        {
+            "$id": "cells",
+            "name": "cells",
+            "maxValue": 480
+        },
+        {
+            "$id": "moduleThermistors",
+            "name": "moduleThermistors",
+            "maxValue": 100
+        }
+    ],
+    "groups": [
+        {
+            "name": "Thresholds",
+            "baseRegister": 1,
+            "table": "HoldingRegisters",
+            "points": [
+                {
+                    "name": "GroupTerminalOverVoltageLevel1AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "GroupTerminalOverVoltageLevel2AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "GroupTerminalOverVoltageLevel3AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "GroupTerminalOverVoltageHysteresis",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "GroupTerminalUnderVoltageLevel1AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "GroupTerminalUnderVoltageLevel2AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "GroupTerminalUnderVoltageLevel3AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "GroupTerminalUnderVoltageHysteresis",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "GroupTerminalDischargeOverCurrentLevel1AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "GroupTerminalDischargeOverCurrentLevel2AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "GroupTerminalDischargeOverCurrentLevel3AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "GroupTerminalDischargeOverCurrentHysteresis",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "GroupTerminalChargeOverCurrentLevel1AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "GroupTerminalChargeOverCurrentLevel2AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "GroupTerminalChargeOverCurrentLevel3AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "GroupTerminalChargeOverCurrentHysteresis",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "GroupTerminalInsulationLevel1AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "GroupTerminalInsulationLevel2AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "GroupTerminalInsulationLevel3AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "GroupTerminalInsulationHysteresis",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "CellChargeOverTemperatureLevel1AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1,
+                    "offset": -40
+                },
+                {
+                    "name": "CellChargeOverTemperatureLevel2AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1,
+                    "offset": -40
+                },
+                {
+                    "name": "CellChargeOverTemperatureLevel3AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1,
+                    "offset": -40
+                },
+                {
+                    "name": "CellChargeOverTemperatureHysteresis",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "CellChargeUnderTemperatureLevel1AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1,
+                    "offset": -40
+                },
+                {
+                    "name": "CellChargeUnderTemperatureLevel2AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1,
+                    "offset": -40
+                },
+                {
+                    "name": "CellChargeUnderTemperatureLevel3AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1,
+                    "offset": -40
+                },
+                {
+                    "name": "CellChargeUnderTemperatureHysteresis",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "CellOverVoltageLevel1AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.001
+                },
+                {
+                    "name": "CellOverVoltageLevel2AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.001
+                },
+                {
+                    "name": "CellOverVoltageLevel3AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.001
+                },
+                {
+                    "name": "CellOverVoltageHysteresis",
+                    "type": "UInt16",
+                    "scaleFactor": 0.001
+                },
+                {
+                    "name": "CellUnderVoltageLevel1AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.001
+                },
+                {
+                    "name": "CellUnderVoltageLevel2AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.001
+                },
+                {
+                    "name": "CellUnderVoltageLevel3AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.001
+                },
+                {
+                    "name": "CellUnderVoltageHysteresis",
+                    "type": "UInt16",
+                    "scaleFactor": 0.001
+                },
+                {
+                    "name": "CellVoltageDifferenceLevel1AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.001
+                },
+                {
+                    "name": "CellVoltageDifferenceLevel2AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.001
+                },
+                {
+                    "name": "CellVoltageDifferenceLevel3AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.001
+                },
+                {
+                    "name": "CellVoltageDifferenceHysteresis",
+                    "type": "UInt16",
+                    "scaleFactor": 0.001
+                },
+                {
+                    "name": "CellTemperatureDifferenceLevel1AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "CellTemperatureDifferenceLevel2AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "CellTemperatureDifferenceLevel3AlarmThreshold",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "CellTemperatureDifferenceHysteresis",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                }
+            ]
+        },
+        {
+            "name": "StringInfo",
+            "baseRegister": 1,
+            "table": "InputRegisters",
+            "points": [
+                {
+                    "name": "BatteryStringVoltage",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "BatteryStringCurrent",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1,
+                    "offset": -1600
+                },
+                {
+                    "name": "BatteryStringStatus",
+                    "type": "Enum16",
+                    "symbols": [
+                        {
+                            "name": "Initialising",
+                            "value": 1
+                        },
+                        {
+                            "name": "SelfTest",
+                            "value": 2
+                        },
+                        {
+                            "name": "Charging",
+                            "value": 3
+                        },
+                        {
+                            "name": "Charged",
+                            "value": 4
+                        },
+                        {
+                            "name": "ChargingProhibited",
+                            "value": 5
+                        },
+                        {
+                            "name": "DischargingProhibited",
+                            "value": 6
+                        },
+                        {
+                            "name": "Idle",
+                            "value": 7
+                        },
+                        {
+                            "name": "DischargeFault",
+                            "value": 8
+                        },
+                        {
+                            "name": "DischargeFaultCleared",
+                            "value": 9
+                        },
+                        {
+                            "name": "TestMode",
+                            "value": 10
+                        },
+                        {
+                            "name": "StringProtect",
+                            "value": 11
+                        },
+                        {
+                            "name": "Discharging",
+                            "value": 12
+                        },
+                        {
+                            "name": "Discharged",
+                            "value": 13
+                        },
+                        {
+                            "name": "TerminalTest",
+                            "value": 14
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "ModuleTemperatures",
+            "baseRegister": 500,
+            "table": "InputRegisters",
+            "points": [
+                {
+                    "name": "ModuleTemperatures",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1,
+                    "offset": -40,
+                    "count": {
+                        "$ref": "moduleThermistors"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "CellVoltages",
+            "baseRegister": 1000,
+            "table": "InputRegisters",
+            "points": [
+                {
+                    "name": "CellVoltages",
+                    "type": "UInt16",
+                    "scaleFactor": 0.001,
+                    "count": {
+                        "$ref": "cells"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "CellTemperatures",
+            "baseRegister": 2000,
+            "table": "InputRegisters",
+            "points": [
+                {
+                    "name": "CellTemperatures",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1,
+                    "offset": -40,
+                    "count": {
+                        "$ref": "cells"
+                    }
+                }
+            ]
+        }
+    ]
+}

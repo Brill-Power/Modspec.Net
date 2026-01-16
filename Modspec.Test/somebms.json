@@ -1,0 +1,866 @@
+{
+    "name": "SomeBms",
+    "counts": [
+        {
+            "$id": "strings",
+            "name": "strings",
+            "maxValue": 20
+        },
+        {
+            "$id": "cells",
+            "name": "cells",
+            "maxValue": 700
+        },
+        {
+            "$id": "moduleThermistors",
+            "name": "moduleThermistors",
+            "maxValue": 100
+        },
+        {
+            "$id": "modules",
+            "name": "modules",
+            "maxValue": 40
+        }
+    ],
+    "groups": [
+        {
+            "name": "WarningsErrorsEmergencies",
+            "baseRegister": 1,
+            "table": "DiscreteInputs",
+            "points": [
+                {
+                    "name": "StringErrors1",
+                    "type": "Bitfield16",
+                    "symbols": [
+                        {
+                            "name": "StringTerminalOverVoltageWarning",
+                            "level": "Warning",
+                            "value": 0
+                        },
+                        {
+                            "name": "StringTerminalOverVoltageError",
+                            "level": "Error",
+                            "value": 1
+                        },
+                        {
+                            "name": "StringTerminalOverVoltageEmergency",
+                            "level": "Emergency",
+                            "value": 2
+                        },
+                        {
+                            "name": "StringTerminalUnderVoltageWarning",
+                            "level": "Warning",
+                            "value": 3
+                        },
+                        {
+                            "name": "StringTerminalUnderVoltageError",
+                            "level": "Error",
+                            "value": 4
+                        },
+                        {
+                            "name": "StringTerminalUnderVoltageEmergency",
+                            "level": "Emergency",
+                            "value": 5
+                        },
+                        {
+                            "name": "StringTerminalDischargeOverCurrentWarning",
+                            "level": "Warning",
+                            "value": 6
+                        },
+                        {
+                            "name": "StringTerminalDischargeOverCurrentError",
+                            "level": "Error",
+                            "value": 7
+                        },
+                        {
+                            "name": "StringTerminalDischargeOverCurrentEmergency",
+                            "level": "Emergency",
+                            "value": 8
+                        },
+                        {
+                            "name": "StringTerminalChargeOverCurrentWarning",
+                            "level": "Warning",
+                            "value": 9
+                        },
+                        {
+                            "name": "StringTerminalChargeOverCurrentError",
+                            "level": "Error",
+                            "value": 10
+                        },
+                        {
+                            "name": "StringTerminalChargeOverCurrentEmergency",
+                            "level": "Emergency",
+                            "value": 11
+                        },
+                        {
+                            "name": "StringTerminalResistanceWarning",
+                            "level": "Warning",
+                            "value": 12
+                        },
+                        {
+                            "name": "StringTerminalResistanceError",
+                            "level": "Error",
+                            "value": 13
+                        },
+                        {
+                            "name": "StringTerminalResistanceEmergency",
+                            "level": "Emergency",
+                            "value": 14
+                        },
+                        {
+                            "name": "CellChargeOverTemperatureWarning",
+                            "level": "Warning",
+                            "value": 15
+                        }
+                    ]
+                },
+                {
+                    "name": "StringErrors2",
+                    "type": "Bitfield16",
+                    "symbols": [
+                        {
+                            "name": "CellChargeOverTemperatureError",
+                            "level": "Error",
+                            "value": 0
+                        },
+                        {
+                            "name": "CellChargeOverTemperatureEmergency",
+                            "level": "Emergency",
+                            "value": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "SystemSettings",
+            "baseRegister": 500,
+            "table": "HoldingRegisters",
+            "points": [
+                {
+                    "name": "StringNumber",
+                    "type": "UInt16",
+                    "minValue": 1,
+                    "maxValue": 20
+                },
+                {
+                    "name": "SystemFaultReset",
+                    "type": "Enum16",
+                    "symbols": [
+                        {
+                            "name": "DoNotReset",
+                            "value": 0
+                        },
+                        {
+                            "name": "Reset",
+                            "value": 1
+                        }
+                    ]
+                },
+                {
+                    "name": "MainCircuitBreakerControl",
+                    "type": "Enum16",
+                    "symbols": [
+                        {
+                            "name": "NoOperation",
+                            "value": 0
+                        },
+                        {
+                            "name": "Closing",
+                            "value": 1
+                        },
+                        {
+                            "name": "Opening",
+                            "value": 2
+                        }
+                    ]
+                },
+                {
+                    "name": "SystemPowerUpDownControlCommand",
+                    "type": "Enum16",
+                    "symbols": [
+                        {
+                            "name": "NoOperation",
+                            "value": 0
+                        },
+                        {
+                            "name": "PowerOn",
+                            "value": 1
+                        },
+                        {
+                            "name": "PowerOff",
+                            "value": 2
+                        }
+                    ]
+                },
+                {
+                    "name": "StringMaintenanceMode",
+                    "type": "Enum16",
+                    "count": {
+                        "$ref": "strings"
+                    },
+                    "symbols": [
+                        {
+                            "name": "Invalid",
+                            "value": 0
+                        },
+                        {
+                            "name": "PowerOn",
+                            "value": 1
+                        },
+                        {
+                            "name": "PowerOff",
+                            "value": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "SystemInfo",
+            "baseRegister": 1,
+            "table": "InputRegisters",
+            "points": [
+                {
+                    "name": "SystemCircuitBreakerStatus",
+                    "type": "UInt16"
+                },
+                {
+                    "name": "SystemTotalVoltage",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "SystemCurrent",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1,
+                    "offset": -1600
+                },
+                {
+                    "name": "SystemSOC",
+                    "type": "UInt16"
+                },
+                {
+                    "name": "SystemSOH",
+                    "type": "UInt16"
+                },
+                {
+                    "name": "MaximumCellVoltage",
+                    "type": "UInt16",
+                    "scaleFactor": 0.001
+                },
+                {
+                    "name": "MaximumCellVoltageStringNumber",
+                    "type": "UInt16"
+                },
+                {
+                    "name": "MaximumCellVoltageCellNumber",
+                    "type": "UInt16"
+                },
+                {
+                    "name": "MinimumCellVoltage",
+                    "type": "UInt16",
+                    "scaleFactor": 0.001
+                },
+                {
+                    "name": "MinimumCellVoltageStringNumber",
+                    "type": "UInt16"
+                },
+                {
+                    "name": "MinimumCellVoltageCellNumber",
+                    "type": "UInt16"
+                },
+                {
+                    "name": "MaximumCellTemperature",
+                    "type": "UInt16",
+                    "scaleFactor": 1,
+                    "offset": -40
+                },
+                {
+                    "name": "MaximumCellTemperatureStringNumber",
+                    "type": "UInt16"
+                },
+                {
+                    "name": "MaximumCellTemperatureCellNumber",
+                    "type": "UInt16"
+                },
+                {
+                    "name": "MinimumCellTemperature",
+                    "type": "UInt16",
+                    "scaleFactor": 1,
+                    "offset": -40
+                },
+                {
+                    "name": "MinimumCellTemperatureStringNumber",
+                    "type": "UInt16"
+                },
+                {
+                    "name": "MinimumCellTemperatureCellNumber",
+                    "type": "UInt16"
+                },
+                {
+                    "name": "SystemAccumulatedChargingCapacity",
+                    "type": "UInt32",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "SystemAccumulatedDischargingCapacity",
+                    "type": "UInt32",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "SystemAccumulatedChargeQuantitySingleTime",
+                    "type": "UInt32",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "SystemAccumulatedDischargeQuantitySingleTime",
+                    "type": "UInt32",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "SystemRechargeableCapacity",
+                    "type": "UInt32",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "SystemDischargeCapacity",
+                    "type": "UInt32",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "AvailableDischargeTime",
+                    "type": "UInt16"
+                },
+                {
+                    "name": "AvailableChargingTime",
+                    "type": "UInt16"
+                },
+                {
+                    "name": "AllowableMaximumDischargePower",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "AllowableMaximumChargePower",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "AllowableMaximumDischargeCurrent",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1,
+                    "offset": -1600
+                },
+                {
+                    "name": "AllowableMaximumChargeCurrent",
+                    "type": "UInt16",
+                    "scaleFactor": 0.1,
+                    "offset": -1600
+                },
+                {
+                    "name": "DischargeTimesOfTheDay",
+                    "type": "UInt16"
+                },
+                {
+                    "name": "ChargeTimesOfTheDay",
+                    "type": "UInt16"
+                },
+                {
+                    "name": "DischargeQuantityOfTheDay",
+                    "type": "UInt32",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "ChargeQuantityOfTheDay",
+                    "type": "UInt32",
+                    "scaleFactor": 0.1
+                },
+                {
+                    "name": "OperatingTemperature",
+                    "type": "UInt16",
+                    "scaleFactor": 1,
+                    "offset": -40
+                },
+                {
+                    "name": "SystemState",
+                    "type": "Enum16",
+                    "symbols": [
+                        {
+                            "name": "Initial",
+                            "value": 0
+                        },
+                        {
+                            "name": "Charging",
+                            "value": 1
+                        },
+                        {
+                            "name": "Discharging",
+                            "value": 2
+                        },
+                        {
+                            "name": "Ready",
+                            "value": 3
+                        },
+                        {
+                            "name": "ClusterMaintenance",
+                            "value": 4
+                        },
+                        {
+                            "name": "ChargeProhibition",
+                            "value": 5
+                        },
+                        {
+                            "name": "DischargeProhibition",
+                            "value": 6
+                        },
+                        {
+                            "name": "ChargingDischargingProhibited",
+                            "value": 7
+                        },
+                        {
+                            "name": "Fault",
+                            "value": 8
+                        },
+                        {
+                            "name": "FaultRecovery",
+                            "value": 9
+                        },
+                        {
+                            "name": "TestMode",
+                            "value": 10
+                        },
+                        {
+                            "name": "PowerOffInProgress",
+                            "value": 11
+                        },
+                        {
+                            "name": "PowerOffCompleted",
+                            "value": 12
+                        }
+                    ]
+                },
+                {
+                    "name": "ChargeDischargeState",
+                    "type": "Enum16",
+                    "symbols": [
+                        {
+                            "name": "Other",
+                            "value": 0
+                        },
+                        {
+                            "name": "Discharge",
+                            "value": 1
+                        },
+                        {
+                            "name": "Charge",
+                            "value": 2
+                        }
+                    ]
+                },
+                {
+                    "name": "SystemInsulationResistance",
+                    "type": "UInt16"
+                },
+                {
+                    "name": "PCSAndBMSCommunicationFailure",
+                    "type": "Enum16",
+                    "symbols": [
+                        {
+                            "name": "CommunicationNormal",
+                            "value": 0
+                        },
+                        {
+                            "name": "CommunicationLost",
+                            "value": 1
+                        }
+                    ]
+                },
+                {
+                    "name": "EMSAndBMSCommunicationFailure",
+                    "type": "Enum16",
+                    "symbols": [
+                        {
+                            "name": "CommunicationNormal",
+                            "value": 0
+                        },
+                        {
+                            "name": "CommunicationLost",
+                            "value": 1
+                        }
+                    ]
+                },
+                {
+                    "name": "CumulativeChargingSeconds",
+                    "type": "UInt32"
+                },
+                {
+                    "name": "CumulativeDishargingSeconds",
+                    "type": "UInt32"
+                }
+            ]
+        }
+    ],
+    "repeatingGroups": [
+        {
+            "name": "BatteryString",
+            "every": 3000,
+            "count": {
+                "$ref": "strings"
+            },
+            "groups": [
+                {
+                    "name": "StringInfo",
+                    "baseRegister": 100,
+                    "table": "InputRegisters",
+                    "points": [
+                        {
+                            "name": "StringState",
+                            "type": "Enum16",
+                            "symbols": [
+                                {
+                                    "name": "Initial",
+                                    "value": 0
+                                },
+                                {
+                                    "name": "Charging",
+                                    "value": 1
+                                },
+                                {
+                                    "name": "Discharging",
+                                    "value": 2
+                                },
+                                {
+                                    "name": "Ready",
+                                    "value": 3
+                                },
+                                {
+                                    "name": "ClusterMaintenance",
+                                    "value": 4
+                                },
+                                {
+                                    "name": "ChargeProhibition",
+                                    "value": 5
+                                },
+                                {
+                                    "name": "DischargeProhibition",
+                                    "value": 6
+                                },
+                                {
+                                    "name": "ChargingDischargingProhibited",
+                                    "value": 7
+                                },
+                                {
+                                    "name": "Fault",
+                                    "value": 8
+                                },
+                                {
+                                    "name": "FaultRecovery",
+                                    "value": 9
+                                },
+                                {
+                                    "name": "TestMode",
+                                    "value": 10
+                                }
+                            ]
+                        },
+                        {
+                            "name": "MaximumAllowableChargingPower",
+                            "type": "UInt16",
+                            "scaleFactor": 0.1
+                        },
+                        {
+                            "name": "MaximumAllowableDischargingPower",
+                            "type": "UInt16",
+                            "scaleFactor": 0.1
+                        },
+                        {
+                            "name": "MaximumAllowableChargingVoltage",
+                            "type": "UInt16",
+                            "scaleFactor": 0.1
+                        },
+                        {
+                            "name": "MaximumAllowableDischargingVoltage",
+                            "type": "UInt16",
+                            "scaleFactor": 0.1
+                        },
+                        {
+                            "name": "MaximumAllowableChargingCurrent",
+                            "type": "UInt16",
+                            "scaleFactor": 0.1
+                        },
+                        {
+                            "name": "MaximumAllowableDischargingCurrent",
+                            "type": "UInt16",
+                            "scaleFactor": 0.1
+                        },
+                        {
+                            "name": "Input1",
+                            "type": "UInt16"
+                        },
+                        {
+                            "name": "Input2",
+                            "type": "UInt16"
+                        },
+                        {
+                            "name": "Input3",
+                            "type": "UInt16"
+                        },
+                        {
+                            "name": "Input4",
+                            "type": "UInt16"
+                        },
+                        {
+                            "name": "Input5",
+                            "type": "UInt16"
+                        },
+                        {
+                            "name": "Input6",
+                            "type": "UInt16"
+                        },
+                        {
+                            "name": "Input7",
+                            "type": "UInt16"
+                        },
+                        {
+                            "name": "Input8",
+                            "type": "UInt16"
+                        },
+                        {
+                            "name": "StringTotalVoltage",
+                            "type": "UInt16",
+                            "scaleFactor": 0.1
+                        },
+                        {
+                            "name": "StringCurrent",
+                            "type": "UInt16",
+                            "scaleFactor": 0.1,
+                            "offset": -1600
+                        },
+                        {
+                            "name": "ESBCMModuleTemperature",
+                            "type": "UInt16",
+                            "scaleFactor": 1,
+                            "offset": -40
+                        },
+                        {
+                            "name": "StringSOC",
+                            "type": "UInt16",
+                            "scaleFactor": 1
+                        },
+                        {
+                            "name": "StringSOH",
+                            "type": "UInt16",
+                            "scaleFactor": 1
+                        },
+                        {
+                            "name": "StringInsulationResistance",
+                            "type": "UInt16",
+                            "scaleFactor": 1
+                        },
+                        {
+                            "name": "AverageCellVoltage",
+                            "type": "UInt16",
+                            "scaleFactor": 0.001
+                        },
+                        {
+                            "name": "AverageCellTemperature",
+                            "type": "UInt16",
+                            "scaleFactor": 1,
+                            "offset": -40
+                        },
+                        {
+                            "name": "MaximumCellVoltage",
+                            "type": "UInt16",
+                            "scaleFactor": 0.001
+                        },
+                        {
+                            "name": "MaximumCellVoltageCellNumber",
+                            "type": "UInt16"
+                        },
+                        {
+                            "name": "MinimumCellVoltage",
+                            "type": "UInt16",
+                            "scaleFactor": 0.001
+                        },
+                        {
+                            "name": "MinimumCellVoltageCellNumber",
+                            "type": "UInt16"
+                        },
+                        {
+                            "name": "MaximumCellTemperature",
+                            "type": "UInt16",
+                            "scaleFactor": 1,
+                            "offset": -40
+                        },
+                        {
+                            "name": "MaximumCellTemperatureCellNumber",
+                            "type": "UInt16"
+                        },
+                        {
+                            "name": "MinimumCellTemperature",
+                            "type": "UInt16",
+                            "scaleFactor": 1,
+                            "offset": -40
+                        },
+                        {
+                            "name": "MinimumCellTemperatureCellNumber",
+                            "type": "UInt16"
+                        },
+                        {
+                            "name": "MaximumCellSOC",
+                            "type": "UInt16",
+                            "scaleFactor": 1
+                        },
+                        {
+                            "name": "MaximumCellSOCCellNumber",
+                            "type": "UInt16"
+                        },
+                        {
+                            "name": "MinimumCellSOC",
+                            "type": "UInt16",
+                            "scaleFactor": 1
+                        },
+                        {
+                            "name": "MinimumCellSOCCellNumber",
+                            "type": "UInt16"
+                        },
+                        {
+                            "name": "MaximumCellSOH",
+                            "type": "UInt16",
+                            "scaleFactor": 1
+                        },
+                        {
+                            "name": "MaximumCellSOHCellNumber",
+                            "type": "UInt16"
+                        },
+                        {
+                            "name": "MinimumCellSOH",
+                            "type": "UInt16",
+                            "scaleFactor": 1
+                        },
+                        {
+                            "name": "MinimumCellSOHCellNumber",
+                            "type": "UInt16"
+                        },
+                        {
+                            "name": "AccumulatedChargingCapacity",
+                            "type": "UInt32",
+                            "scaleFactor": 0.1
+                        },
+                        {
+                            "name": "AccumulatedDischargingCapacity",
+                            "type": "UInt32",
+                            "scaleFactor": 0.1
+                        },
+                        {
+                            "name": "AccumulatedChargeQuantitySingleTime",
+                            "type": "UInt32",
+                            "scaleFactor": 0.1
+                        },
+                        {
+                            "name": "AccumulatedDischargeQuantitySingleTime",
+                            "type": "UInt32",
+                            "scaleFactor": 0.1
+                        },
+                        {
+                            "name": "RechargeableCapacity",
+                            "type": "UInt32",
+                            "scaleFactor": 0.1
+                        },
+                        {
+                            "name": "DischargeCapacity",
+                            "type": "UInt32",
+                            "scaleFactor": 0.1
+                        },
+                        {
+                            "name": "PackSOC",
+                            "type": "UInt16",
+                            "scaleFactor": 1,
+                            "count": {
+                                "$ref": "modules"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "CellVoltages",
+                    "baseRegister": 191,
+                    "table": "InputRegisters",
+                    "points": [
+                        {
+                            "name": "CellVoltages",
+                            "type": "UInt16",
+                            "scaleFactor": 0.001,
+                            "count": {
+                                "$ref": "cells"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "CellTemperatures",
+                    "baseRegister": 891,
+                    "table": "InputRegisters",
+                    "points": [
+                        {
+                            "name": "CellTemperatures",
+                            "type": "UInt16",
+                            "scaleFactor": 1,
+                            "offset": -40,
+                            "count": {
+                                "$ref": "cells"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "CellSoCs",
+                    "baseRegister": 1591,
+                    "table": "InputRegisters",
+                    "points": [
+                        {
+                            "name": "CellSOCs",
+                            "type": "UInt16",
+                            "scaleFactor": 1,
+                            "count": {
+                                "$ref": "cells"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "CellSoHs",
+                    "baseRegister": 2291,
+                    "table": "InputRegisters",
+                    "points": [
+                        {
+                            "name": "CellSOHs",
+                            "type": "UInt16",
+                            "scaleFactor": 1,
+                            "count": {
+                                "$ref": "cells"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "ModuleTemperatures",
+                    "baseRegister": 2991,
+                    "table": "InputRegisters",
+                    "points": [
+                        {
+                            "name": "TerminalTemperatures",
+                            "type": "UInt16",
+                            "scaleFactor": 1,
+                            "offset": -40,
+                            "count": {
+                                "$ref": "moduleThermistors"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

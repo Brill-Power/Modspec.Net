@@ -1,0 +1,22 @@
+stages:
+  - build
+  - test
+
+build:
+  image: mcr.microsoft.com/dotnet/sdk:10.0
+  stage: build
+  variables:
+    GIT_STRATEGY: "clone"
+  script:
+    - dotnet build
+
+test:
+  image : mcr.microsoft.com/dotnet/sdk:10.0
+  before_script:
+    - apt-get update --yes
+  stage: test
+  script:
+    - dotnet test
+  artifacts:
+    reports:
+      junit: ./**/TestResults/TestResults.xml
