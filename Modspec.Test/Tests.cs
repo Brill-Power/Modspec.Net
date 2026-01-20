@@ -147,8 +147,14 @@ public class Tests
 
         private ValueTask ReadAsync(int startingRegister, int count, in Memory<byte> source, ref Memory<byte> destination)
         {
-            source.Slice(startingRegister, count).CopyTo(destination);
+            Span<byte> span = destination.Span;
+            Read(startingRegister, count, source, ref span);
             return ValueTask.CompletedTask;
+        }
+
+        private void Read(int startingRegister, int count, in Memory<byte> source, ref Span<byte> destination)
+        {
+            source.Span.Slice(startingRegister, count).CopyTo(destination);
         }
 
         public ValueTask ReadCoilsAsync(int startingRegister, Memory<byte> destination)
@@ -187,6 +193,26 @@ public class Tests
         public void WriteRegisters(int startingRegister, Memory<byte> value)
         {
             value.Span.CopyTo(_holdingRegisters.Span.Slice(startingRegister * 2));
+        }
+
+        public void ReadHoldingRegisters(int startingRegister, Span<byte> destination)
+        {
+            Read(startingRegister * 2, destination.Length, in _holdingRegisters, ref destination);
+        }
+
+        public void ReadInputRegisters(int startingRegister, Span<byte> destination)
+        {
+            Read(startingRegister * 2, destination.Length, in _inputRegisters, ref destination);
+        }
+
+        public void ReadCoils(int startingRegister, Span<byte> destination)
+        {
+            Read(startingRegister, destination.Length, in _coils, ref destination);
+        }
+
+        public void ReadDiscreteInputs(int startingRegister, Span<byte> destination)
+        {
+            Read(startingRegister, destination.Length, in _discreteInputs, ref destination);
         }
     }
 }

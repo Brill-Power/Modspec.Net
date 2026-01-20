@@ -200,6 +200,12 @@ namespace {schema.Name};
                 mainWriter.WriteLine($"\t\t{indent}await _client.Read{group.Table}Async({readOffsetField}{group.BaseRegister}, {bufferName});");
                 mainWriter.WriteLine($"\t{indent}}}");
                 mainWriter.WriteLine();
+                mainWriter.WriteLine($"\t{indent}public void Read{group.Name}()");
+                mainWriter.WriteLine($"\t{indent}{{");
+                // note dependency between table name and Read... method on IModbusClient
+                mainWriter.WriteLine($"\t\t{indent}_client.Read{group.Table}({readOffsetField}{group.BaseRegister}, {bufferName}.Span);");
+                mainWriter.WriteLine($"\t{indent}}}");
+                mainWriter.WriteLine();
             }
         }
 

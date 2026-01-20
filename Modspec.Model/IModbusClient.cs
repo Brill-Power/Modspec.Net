@@ -13,6 +13,11 @@ namespace Modspec.Model;
 /// </summary>
 public interface IModbusClient
 {
+    void ReadInputRegisters(int startingRegister, Span<byte> destination);
+    void ReadHoldingRegisters(int startingRegister, Span<byte> destination);
+    void ReadCoils(int startingRegister, Span<byte> destination);
+    void ReadDiscreteInputs(int startingRegister, Span<byte> destination);
+
     /// <summary>
     /// Reads a number of input registers starting at <paramref name="startingRegister"/>.
     /// The number of registers to read is specified by the size of <paramref name="destination"/>.

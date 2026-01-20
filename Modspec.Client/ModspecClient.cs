@@ -102,13 +102,24 @@ public class ModspecClient : IDisposable
     }
 
     /// <summary>
-    /// Reads all values in all groups.
+    /// Asynchronously reads all values in all groups.
     /// </summary>
     public async ValueTask ReadAllAsync()
     {
         foreach (BoundGroup group in Groups)
         {
             await group.ReadAsync();
+        }
+    }
+
+    /// <summary>
+    /// Synchronously reads all values in all groups.
+    /// </summary>
+    public void ReadAll()
+    {
+        foreach (BoundGroup group in Groups)
+        {
+            group.Read();
         }
     }
 

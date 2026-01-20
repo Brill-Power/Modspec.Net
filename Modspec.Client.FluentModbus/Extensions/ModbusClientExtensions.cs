@@ -16,10 +16,10 @@ public static class ModbusClientExtensions
     private delegate Span<byte> Read(ModbusClient client, byte unitId, ushort startingRegister, ushort count);
     private delegate Task<Memory<byte>> ReadAsync(ModbusClient client, byte unitId, ushort startingRegister, ushort count);
 
-    public static Span<byte> ReadManyInputRegisters(this ModbusClient self, byte unitId, int startingRegister, int count)
+    public static void ReadManyInputRegisters(this ModbusClient self, byte unitId, int startingRegister, Span<byte> destination)
     {
-        return self.ReadMany(unitId, startingRegister, count,
-            static (mc, ui, sa, co) => mc.ReadInputRegisters(ui, sa, co));
+        self.ReadMany(unitId, startingRegister,
+            static (mc, ui, sa, co) => mc.ReadInputRegisters(ui, sa, co), destination);
     }
 
     public static async ValueTask<Memory<byte>> ReadManyInputRegistersAsync(this ModbusClient self, byte unitId, int startingRegister, int count)

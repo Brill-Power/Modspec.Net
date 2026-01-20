@@ -31,7 +31,7 @@ public class BoundRepeatingGroupEntry
     public IReadOnlyList<BoundGroup> Groups { get; }
 
     /// <summary>
-    /// Reads the values of all the <see cref="Group"/> instances in this entry.
+    /// Asynchronously reads the values of all the <see cref="Group"/> instances in this entry.
     /// </summary>
     /// <returns>A <see cref="ValueTask"/>.</returns>
     public async ValueTask ReadAllAsync()
@@ -39,6 +39,17 @@ public class BoundRepeatingGroupEntry
         foreach (BoundGroup group in Groups)
         {
             await group.ReadAsync();
+        }
+    }
+
+    /// <summary>
+    /// Synchronously reads the values of all the <see cref="Group"/> instances in this entry.
+    /// </summary>
+    public void ReadAll()
+    {
+        foreach (BoundGroup group in Groups)
+        {
+            group.Read();
         }
     }
 }

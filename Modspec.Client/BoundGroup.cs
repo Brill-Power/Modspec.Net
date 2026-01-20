@@ -84,7 +84,29 @@ public class BoundGroup
     public IReadOnlyList<IModelValue> Values { get; }
 
     /// <summary>
-    /// Reads all the registers in this group.
+    /// Synchronously reads all the registers in this group.
+    /// </summary>
+    public void Read()
+    {
+        switch (Group.Table)
+        {
+            case Table.InputRegisters:
+                _client.ReadInputRegisters(Group.BaseRegister + _offset, _buffer.Span);
+                break;
+            case Table.HoldingRegisters:
+                _client.ReadHoldingRegisters(Group.BaseRegister + _offset, _buffer.Span);
+                break;
+            case Table.Coils:
+                _client.ReadCoils(Group.BaseRegister + _offset, _buffer.Span);
+                break;
+            case Table.DiscreteInputs:
+                _client.ReadDiscreteInputs(Group.BaseRegister + _offset, _buffer.Span);
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Asynchronously reads all the registers in this group.
     /// </summary>
     /// <returns>A <see cref="ValueTask"/>.</returns>
     public async ValueTask ReadAsync()
