@@ -52,9 +52,10 @@ public class ModelValue : IModelValue
             {
                 if (Point.Type.IsEnum())
                 {
+                    ulong rhs = (ulong)Convert.ChangeType(value, TypeCode.UInt64);
                     foreach (Symbol symbol in Point.Symbols)
                     {
-                        if (symbol.Value.Equals(value))
+                        if ((ulong)symbol.Value == rhs)
                         {
                             return symbol.Name;
                         }

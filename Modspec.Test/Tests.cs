@@ -107,6 +107,67 @@ public class Tests
     }
 
     [Test]
+    public void TestStringEnum()
+    {
+        Schema schema = new Schema
+        {
+            Name = "TestStringEnum",
+            Groups = [
+                new Group
+                {
+                    Name = "Test",
+                    BaseRegister = 0,
+                    Table = Table.HoldingRegisters,
+                    Points = [
+                        new Point
+                        {
+                            Name = "Language",
+                            Type = PointType.Enum16,
+                            Symbols = [
+                                new Symbol
+                                {
+                                    Name = "English",
+                                    Value = 0,
+                                },
+                                new Symbol
+                                {
+                                    Name = "French",
+                                    Value = 1,
+                                },
+                                new Symbol
+                                {
+                                    Name = "Japanese",
+                                    Value = 2,
+                                },
+                                new Symbol
+                                {
+                                    Name = "Chinese",
+                                    Value = 3,
+                                }
+                            ]
+                        }
+                    ]
+                },
+            ]
+        };
+        MockModbusClient mockClient = new MockModbusClient();
+        ModspecClient client = new ModspecClient(mockClient, true, schema);
+        client.ReadAll();
+        IModelValue value = client.Groups[0].Values[0];
+        Assert.That(value.Point.Name, Is.EqualTo("Language"));
+        Assert.That(value.Value, Is.EqualTo("English"));
+        BinaryPrimitives.WriteUInt16BigEndian(mockClient.HoldingRegisters.Span, 1);
+        client.ReadAll();
+        Assert.That(value.Value, Is.EqualTo("French"));
+        BinaryPrimitives.WriteUInt16BigEndian(mockClient.HoldingRegisters.Span, 2);
+        client.ReadAll();
+        Assert.That(value.Value, Is.EqualTo("Japanese"));
+        BinaryPrimitives.WriteUInt16BigEndian(mockClient.HoldingRegisters.Span, 3);
+        client.ReadAll();
+        Assert.That(value.Value, Is.EqualTo("Chinese"));
+    }
+
+    [Test]
     public void TestClient()
     {
         Stream? stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Modspec.Test.somebms.json");
