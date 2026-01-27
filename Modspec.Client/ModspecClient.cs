@@ -125,10 +125,7 @@ public class ModspecClient : IDisposable
 
     public void Dispose()
     {
-        if (_client is IDisposable disposable)
-        {
-            disposable.Dispose();
-        }
+        _client.Dispose();
     }
 
     private static void WriteLittleEndian(Point point, object value, Span<byte> slice)

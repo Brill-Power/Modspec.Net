@@ -74,4 +74,12 @@ public class FluentModbusClient : IReadWriteModbusClient
     {
         _client.WriteMultipleRegisters(_unitId, (ushort)startingRegister, value);
     }
+
+    public void Dispose()
+    {
+        if (_client is IDisposable disposable)
+        {
+            disposable.Dispose();
+        }
+    }
 }

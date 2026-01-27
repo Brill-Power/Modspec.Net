@@ -275,5 +275,9 @@ public class Tests
         {
             Read(startingRegister, destination.Length, in _discreteInputs, ref destination);
         }
+
+        public void Dispose()
+        {
+        }
     }
 }

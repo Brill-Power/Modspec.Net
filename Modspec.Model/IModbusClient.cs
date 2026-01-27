@@ -11,7 +11,7 @@ namespace Modspec.Model;
 /// <summary>
 /// Interface for a Modbus client.
 /// </summary>
-public interface IModbusClient
+public interface IModbusClient : IDisposable
 {
     void ReadInputRegisters(int startingRegister, Span<byte> destination);
     void ReadHoldingRegisters(int startingRegister, Span<byte> destination);
