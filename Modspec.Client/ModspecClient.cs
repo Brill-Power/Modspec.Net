@@ -254,6 +254,10 @@ public class ModspecClient : IDisposable
             case PointType.Bitfield64:
                 return BinaryPrimitives.ReadUInt64LittleEndian(slice);
             case PointType.String:
+                if (slice[0] == '\0')
+                {
+                    return null;
+                }
                 return Encoding.UTF8.GetString(slice.Slice(0, point.Length ?? 0));
             case PointType.UInt16:
             case PointType.Acc16:
@@ -293,6 +297,10 @@ public class ModspecClient : IDisposable
             case PointType.Bitfield64:
                 return BinaryPrimitives.ReadUInt64BigEndian(slice);
             case PointType.String:
+                if (slice[0] == '\0')
+                {
+                    return null;
+                }
                 return Encoding.UTF8.GetString(slice.Slice(0, point.Length ?? 0));
             case PointType.UInt16:
             case PointType.Acc16:
