@@ -47,7 +47,7 @@ public class ModelValue : IModelValue
                 while (i < Point.Count.MaxValue);
                 return array;
             }
-            object? value = _readValue(Point, slice);
+            object? value = _readValue(Point, slice.Slice(0, Point.SizeInBytes));
             if (Point.Type.IsEnumOrBitfield() && value is not null && Point.Symbols is not null)
             {
                 if (Point.Type.IsEnum())

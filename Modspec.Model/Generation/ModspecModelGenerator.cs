@@ -238,7 +238,7 @@ namespace {schema.Name};
                     break;
                 case PointType.String:
                     type = "string";
-                    readMethod = "Encoding.UTF8.GetString";
+                    readMethod = "ModbusString.ReadNullTerminatedString";
                     break;
                 case PointType.Int16:
                     type = "short";

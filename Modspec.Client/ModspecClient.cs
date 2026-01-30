@@ -254,7 +254,7 @@ public class ModspecClient : IDisposable
             case PointType.Bitfield64:
                 return BinaryPrimitives.ReadUInt64LittleEndian(slice);
             case PointType.String:
-                return StringMarshaller.ReadString(slice, point.Length ?? 0);
+                return ModbusString.ReadNullTerminatedString(slice);
             case PointType.UInt16:
             case PointType.Acc16:
                 return Scale(point, BinaryPrimitives.ReadUInt16LittleEndian(slice));
@@ -293,7 +293,7 @@ public class ModspecClient : IDisposable
             case PointType.Bitfield64:
                 return BinaryPrimitives.ReadUInt64BigEndian(slice);
             case PointType.String:
-                return StringMarshaller.ReadString(slice, point.Length ?? 0);
+                return ModbusString.ReadNullTerminatedString(slice);
             case PointType.UInt16:
             case PointType.Acc16:
                 return Scale(point, BinaryPrimitives.ReadUInt16BigEndian(slice));
@@ -327,22 +327,5 @@ public class ModspecClient : IDisposable
     {
         double d = (double)Convert.ChangeType(value, typeof(double));
         return (d - (point.Offset ?? 0)) / (point.ScaleFactor ?? 1);
-    }
-
-    private static class StringMarshaller
-    {
-        public static string ReadString(ReadOnlySpan<byte> buffer, ushort maxLength)
-        {
-            int max = Math.Min(buffer.Length, maxLength);
-            int end;
-            for (end = 0; end < max; end++)
-            {
-                if (buffer[end] == '\0')
-                {
-                    break;
-                }
-            }
-            return Encoding.UTF8.GetString(buffer.Slice(0, end));
-        }
     }
 }
