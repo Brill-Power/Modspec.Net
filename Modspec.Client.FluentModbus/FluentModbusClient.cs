@@ -72,7 +72,14 @@ public class FluentModbusClient : IReadWriteModbusClient
 
     public void WriteRegisters(int startingRegister, Memory<byte> value)
     {
-        _client.WriteMultipleRegisters(_unitId, (ushort)startingRegister, value);
+        if (value.Length == 2)
+        {
+            _client.WriteSingleRegister(_unitId, (ushort)startingRegister, value.ToArray());
+        }
+        else
+        {
+            _client.WriteMultipleRegisters(_unitId, (ushort)startingRegister, value);
+        }
     }
 
     public void Dispose()
