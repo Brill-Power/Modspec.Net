@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers.Binary;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -85,6 +86,73 @@ public class Tests
         Assert.That(errors1.GetLevel(), Is.EqualTo(Level.Error));
         errors1 = StringErrors1.StringTerminalUnderVoltageEmergency | StringErrors1.StringTerminalResistanceWarning;
         Assert.That(errors1.GetLevel(), Is.EqualTo(Level.Emergency));
+    }
+
+    [Test]
+    public async Task TestInlineChangeDetectionNoChange()
+    {
+        MockModbusClient mockClient = new MockModbusClient();
+        List<(string name, object oldValue, object newValue, Level level)> changes = [];
+        SomeBmsClient bmsClient = new SomeBmsClient(mockClient, 2, 2, 480, 100,
+            onBitfieldChanged: (name, oldVal, newVal, level) => changes.Add((name, oldVal, newVal, level)));
+
+        // no errors — no callback
+        await bmsClient.ReadWarningsErrorsEmergenciesAsync();
+        Assert.That(changes, Is.Empty);
+
+        // read again with same state — still no callback
+        await bmsClient.ReadWarningsErrorsEmergenciesAsync();
+        Assert.That(changes, Is.Empty);
+    }
+
+    [Test]
+    public async Task TestInlineChangeDetectionDetectsChange()
+    {
+        MockModbusClient mockClient = new MockModbusClient();
+        List<(string name, object oldValue, object newValue, Level level)> changes = [];
+        SomeBmsClient bmsClient = new SomeBmsClient(mockClient, 2, 2, 480, 100,
+            onBitfieldChanged: (name, oldVal, newVal, level) => changes.Add((name, oldVal, newVal, level)));
+
+        // introduce an error and read
+        mockClient.DiscreteInputs.Span[1] = 0b10000000; // StringTerminalDischargeOverCurrentError
+        await bmsClient.ReadWarningsErrorsEmergenciesAsync();
+        Assert.That(changes, Has.Count.EqualTo(1));
+        Assert.That(changes[0].name, Is.EqualTo("StringErrors1"));
+        Assert.That(changes[0].oldValue, Is.EqualTo((StringErrors1)0));
+        Assert.That(changes[0].newValue, Is.EqualTo(StringErrors1.StringTerminalDischargeOverCurrentError));
+        Assert.That(changes[0].newValue.ToString(), Does.Contain("StringTerminalDischargeOverCurrentError"));
+        Assert.That(changes[0].level, Is.EqualTo(Level.Error));
+
+        // same state again — no callback
+        changes.Clear();
+        await bmsClient.ReadWarningsErrorsEmergenciesAsync();
+        Assert.That(changes, Is.Empty);
+    }
+
+    [Test]
+    public async Task TestInlineChangeDetectionReportsHighestLevel()
+    {
+        MockModbusClient mockClient = new MockModbusClient();
+        List<(string name, object oldValue, object newValue, Level level)> changes = [];
+        SomeBmsClient bmsClient = new SomeBmsClient(mockClient, 2, 2, 480, 100,
+            onBitfieldChanged: (name, oldVal, newVal, level) => changes.Add((name, oldVal, newVal, level)));
+
+        // set both a warning (bit 0) and an emergency (bit 2) on StringErrors1
+        mockClient.DiscreteInputs.Span[1] = 0b00000101;
+        await bmsClient.ReadWarningsErrorsEmergenciesAsync();
+        Assert.That(changes, Has.Count.EqualTo(1));
+        Assert.That(changes[0].level, Is.EqualTo(Level.Emergency));
+    }
+
+    [Test]
+    public async Task TestNoCallbackNoOverhead()
+    {
+        // constructing without callback should work fine — no change detection runs
+        MockModbusClient mockClient = new MockModbusClient();
+        SomeBmsClient bmsClient = new SomeBmsClient(mockClient, 2, 2, 480, 100);
+        mockClient.DiscreteInputs.Span[1] = 0b10000000;
+        await bmsClient.ReadWarningsErrorsEmergenciesAsync();
+        Assert.That(bmsClient.StringErrors1, Is.EqualTo(StringErrors1.StringTerminalDischargeOverCurrentError));
     }
 
     [Test]
