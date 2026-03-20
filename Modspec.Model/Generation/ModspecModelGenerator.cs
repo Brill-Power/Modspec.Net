@@ -77,7 +77,8 @@ namespace {schema.Name};
                 List<string> bufferInitialisers = [];
                 List<string> fieldInitialisers = [];
                 List<ConstructorParameter> constructorParams = [];
-                WriteGroups(schema.Groups, mainWriter, appendixWriter, bufferInitialisers, fieldInitialisers, constructorParams);
+                List<string> bitfieldPointsWithLevels = [];
+                WriteGroups(schema.Groups, mainWriter, appendixWriter, bufferInitialisers, fieldInitialisers, constructorParams, bitfieldPointsWithLevels: bitfieldPointsWithLevels);
 
                 foreach (RepeatingGroup repeatingGroup in schema.RepeatingGroups)
                 {
@@ -137,6 +138,11 @@ namespace {schema.Name};
                 mainWriter.WriteLine("}");
                 mainWriter.WriteLine();
 
+                if (bitfieldPointsWithLevels.Count > 0)
+                {
+                    WriteChangeDetectionFactory(schema.Name, bitfieldPointsWithLevels, appendixWriter);
+                }
+
                 result = mainWriter.ToString() + appendixWriter.ToString();
                 return true;
             }
@@ -168,7 +174,7 @@ namespace {schema.Name};
             mainWriter.WriteLine($"{indent}\t}}");
         }
 
-        private static void WriteGroups(IReadOnlyCollection<Group> groups, StringWriter mainWriter, StringWriter appendixWriter, List<string> bufferInitialisers, List<string> fieldInitialisers, List<ConstructorParameter> constructorParams, string indent = "", string readOffsetField = "")
+        private static void WriteGroups(IReadOnlyCollection<Group> groups, StringWriter mainWriter, StringWriter appendixWriter, List<string> bufferInitialisers, List<string> fieldInitialisers, List<ConstructorParameter> constructorParams, string indent = "", string readOffsetField = "", List<string>? bitfieldPointsWithLevels = null)
         {
             foreach (Group group in groups)
             {
@@ -185,7 +191,7 @@ namespace {schema.Name};
                         // supplied count of elements, rather than max size of array)
                         throw new InvalidOperationException($"An array must be the last (or only) element in a group.");
                     }
-                    WritePoint(point, bufferName, group.Table, mainWriter, appendixWriter, fieldInitialisers, constructorParams, ref maxOffset, ref bufferSize, indent);
+                    WritePoint(point, bufferName, group.Table, mainWriter, appendixWriter, fieldInitialisers, constructorParams, ref maxOffset, ref bufferSize, indent, bitfieldPointsWithLevels);
                 }
                 if (String.IsNullOrEmpty(bufferSize))
                 {
@@ -209,7 +215,7 @@ namespace {schema.Name};
             }
         }
 
-        private static void WritePoint(Point point, string bufferName, Table table, StringWriter mainWriter, StringWriter appendixWriter, List<string> fieldInitialisers, List<ConstructorParameter> constructorParams, ref int maxOffset, ref string bufferSize, string indent = "")
+        private static void WritePoint(Point point, string bufferName, Table table, StringWriter mainWriter, StringWriter appendixWriter, List<string> fieldInitialisers, List<ConstructorParameter> constructorParams, ref int maxOffset, ref string bufferSize, string indent = "", List<string>? bitfieldPointsWithLevels = null)
         {
             string type;
             string readMethod;
@@ -337,6 +343,7 @@ namespace {schema.Name};
                 appendixWriter.WriteLine();
                 if (isFlags && masksByLevel.Count > 0)
                 {
+                    bitfieldPointsWithLevels?.Add(point.Name);
                     appendixWriter.WriteLine($"public static class {point.Name}Extensions");
                     appendixWriter.WriteLine("{");
                     appendixWriter.WriteLine($"\tpublic static Level GetLevel(this {point.Name} self)");
@@ -419,6 +426,24 @@ namespace {schema.Name};
             mainWriter.WriteLine($"{indent}\t\tget {{ return {readMethod}; }}");
             mainWriter.WriteLine($"{indent}\t}}");
             maxOffset += point.SizeInBytes * (point.Count?.MaxValue ?? 1);
+        }
+
+        private static void WriteChangeDetectionFactory(string schemaName, List<string> points, StringWriter writer)
+        {
+            string clientName = $"{schemaName}Client";
+            writer.WriteLine($"public static class {schemaName}ChangeDetection");
+            writer.WriteLine("{");
+            writer.WriteLine($"\tpublic static BitfieldChangeDetector<{clientName}> CreateDetector()");
+            writer.WriteLine("\t{");
+            writer.WriteLine($"\t\treturn new BitfieldChangeDetector<{clientName}>()");
+            for (int i = 0; i < points.Count; i++)
+            {
+                string terminator = i < points.Count - 1 ? "" : ";";
+                writer.WriteLine($"\t\t\t.Track(c => c.{points[i]}, v => v.GetLevel()){terminator}");
+            }
+            writer.WriteLine("\t}");
+            writer.WriteLine("}");
+            writer.WriteLine();
         }
 
         private static string ToFieldName(string name)
