@@ -138,7 +138,7 @@ namespace {schema.Name};
                 mainWriter.WriteLine("}");
                 mainWriter.WriteLine();
 
-                if (bitfieldPointsWithLevels.Count > 0)
+                if (schema.GenerateChangeDetectionFactory && bitfieldPointsWithLevels.Count > 0)
                 {
                     WriteChangeDetectionFactory(schema.Name, bitfieldPointsWithLevels, appendixWriter);
                 }

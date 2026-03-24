@@ -48,6 +48,19 @@ public class Schema
     /// </summary>
     public List<RepeatingGroup> RepeatingGroups { get; set; } = [];
 
+    /// <summary>
+    /// If true, the generator will emit a static factory class for creating a
+    /// <c>BitfieldChangeDetector</c> that tracks all bitfield points with level annotations.
+    /// The consuming project must provide a <c>BitfieldChangeDetector&lt;TClient&gt;</c> class
+    /// in the <c>Modspec.Model</c> namespace with the following method:
+    /// <code>
+    /// BitfieldChangeDetector&lt;TClient&gt; Track&lt;T&gt;(Func&lt;TClient, T&gt; getter, Func&lt;T, Level&gt; getLevel)
+    ///     where T : struct, Enum
+    /// </code>
+    /// The <c>Track</c> method must return the detector instance to support fluent chaining.
+    /// </summary>
+    public bool GenerateChangeDetectionFactory { get; set; }
+
     public void Serialise(Stream stream)
     {
         JsonSerializer.Serialize(stream, this, Options);
