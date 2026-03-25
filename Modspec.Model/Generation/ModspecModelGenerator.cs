@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 using Modspec.Model.Extensions;
 
@@ -23,12 +24,21 @@ public class ModelGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var pipeline = context.AdditionalTextsProvider
-            .Where(static (file) => Path.GetFileName(file.Path).EndsWith("json"))
-            .Select(static (model, cancellationToken) =>
+        var jsonFiles = context.AdditionalTextsProvider
+            .Where(static (file) => Path.GetFileName(file.Path).EndsWith("json"));
+
+        var generateChangeDetection = context.AnalyzerConfigOptionsProvider
+            .Select(static (provider, _) =>
             {
-                string path = model.Path;
-                ModelCompiler.TryGenerate(model.Path, out string? code);
+                provider.GlobalOptions.TryGetValue("build_property.ModspecGenerateChangeDetectionFactory", out string? value);
+                return String.Equals(value, "true", StringComparison.OrdinalIgnoreCase);
+            });
+
+        var pipeline = jsonFiles.Combine(generateChangeDetection)
+            .Select(static (pair, cancellationToken) =>
+            {
+                string path = pair.Left.Path;
+                ModelCompiler.TryGenerate(path, pair.Right, out string? code);
                 return (path, code);
             })
             .Where(static (pair) => !String.IsNullOrEmpty(pair.code));
@@ -43,7 +53,7 @@ public class ModelGenerator : IIncrementalGenerator
 
     private class ModelCompiler
     {
-        public static bool TryGenerate(string path, [NotNullWhen(true)] out string? result)
+        public static bool TryGenerate(string path, bool generateChangeDetectionFactory, [NotNullWhen(true)] out string? result)
         {
             result = default;
             Schema? schema;
@@ -138,7 +148,7 @@ namespace {schema.Name};
                 mainWriter.WriteLine("}");
                 mainWriter.WriteLine();
 
-                if (schema.GenerateChangeDetectionFactory && bitfieldPointsWithLevels.Count > 0)
+                if (generateChangeDetectionFactory && bitfieldPointsWithLevels.Count > 0)
                 {
                     WriteChangeDetectionFactory(schema.Name, bitfieldPointsWithLevels, appendixWriter);
                 }

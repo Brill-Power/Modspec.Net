@@ -9,6 +9,7 @@
         <VSTestLogger>junit</VSTestLogger>
         <IsTestProject>true</IsTestProject>
         <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+        <ModspecGenerateChangeDetectionFactory>true</ModspecGenerateChangeDetectionFactory>
     </PropertyGroup>
 
     <ItemGroup>
@@ -38,6 +39,10 @@
     <ItemGroup>
         <AdditionalFiles Include="someems.json" />
         <AdditionalFiles Include="somebms.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <CompilerVisibleProperty Include="ModspecGenerateChangeDetectionFactory" />
     </ItemGroup>
 
 </Project>

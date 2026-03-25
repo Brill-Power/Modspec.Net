@@ -88,6 +88,70 @@ public class Tests
     }
 
     [Test]
+    public void TestChangeDetectionFactoryCreatesDetector()
+    {
+        BitfieldChangeDetector<SomeBmsClient> detector = SomeBmsChangeDetection.CreateDetector();
+        Assert.That(detector, Is.Not.Null);
+    }
+
+    [Test]
+    public async Task TestChangeDetectionFactoryDetectsChange()
+    {
+        MockModbusClient mockClient = new MockModbusClient();
+        SomeBmsClient bmsClient = new SomeBmsClient(mockClient, 2, 2, 480, 100);
+        BitfieldChangeDetector<SomeBmsClient> detector = SomeBmsChangeDetection.CreateDetector();
+
+        // initial read with no errors — check twice to confirm no spurious changes
+        await bmsClient.ReadWarningsErrorsEmergenciesAsync();
+        bool called = false;
+        await detector.CheckAsync(bmsClient, (code, desc, level) =>
+        {
+            called = true;
+            return ValueTask.CompletedTask;
+        });
+        Assert.That(called, Is.False);
+
+        // introduce an error and re-read
+        mockClient.DiscreteInputs.Span[1] = 0b10000000; // StringTerminalDischargeOverCurrentError
+        await bmsClient.ReadWarningsErrorsEmergenciesAsync();
+
+        Level reportedLevel = Level.None;
+        called = false;
+        await detector.CheckAsync(bmsClient, (code, desc, level) =>
+        {
+            called = true;
+            reportedLevel = level;
+            return ValueTask.CompletedTask;
+        });
+        Assert.That(called, Is.True);
+        Assert.That(reportedLevel, Is.EqualTo(Level.Error));
+    }
+
+    [Test]
+    public async Task TestChangeDetectionFactoryReportsHighestLevel()
+    {
+        MockModbusClient mockClient = new MockModbusClient();
+        SomeBmsClient bmsClient = new SomeBmsClient(mockClient, 2, 2, 480, 100);
+        BitfieldChangeDetector<SomeBmsClient> detector = SomeBmsChangeDetection.CreateDetector();
+
+        // prime the detector
+        await bmsClient.ReadWarningsErrorsEmergenciesAsync();
+        await detector.CheckAsync(bmsClient, (_, _, _) => ValueTask.CompletedTask);
+
+        // set both a warning (bit 0) and an emergency (bit 2) on StringErrors1
+        mockClient.DiscreteInputs.Span[1] = 0b00000101;
+        await bmsClient.ReadWarningsErrorsEmergenciesAsync();
+
+        Level reportedLevel = Level.None;
+        await detector.CheckAsync(bmsClient, (code, desc, level) =>
+        {
+            reportedLevel = level;
+            return ValueTask.CompletedTask;
+        });
+        Assert.That(reportedLevel, Is.EqualTo(Level.Emergency));
+    }
+
+    [Test]
     public async Task TestRangeValidation()
     {
         Stream? stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Modspec.Test.somebms.json");
