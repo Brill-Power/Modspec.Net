@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers.Binary;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -88,67 +89,67 @@ public class Tests
     }
 
     [Test]
-    public void TestChangeDetectionFactoryCreatesDetector()
+    public async Task TestInlineChangeDetectionNoChange()
     {
-        BitfieldChangeDetector<SomeBmsClient> detector = SomeBmsChangeDetection.CreateDetector();
-        Assert.That(detector, Is.Not.Null);
+        MockModbusClient mockClient = new MockModbusClient();
+        List<(string name, Level level)> changes = [];
+        SomeBmsClient bmsClient = new SomeBmsClient(mockClient, 2, 2, 480, 100,
+            onBitfieldChanged: (name, level) => changes.Add((name, level)));
+
+        // no errors — no callback
+        await bmsClient.ReadWarningsErrorsEmergenciesAsync();
+        Assert.That(changes, Is.Empty);
+
+        // read again with same state — still no callback
+        await bmsClient.ReadWarningsErrorsEmergenciesAsync();
+        Assert.That(changes, Is.Empty);
     }
 
     [Test]
-    public async Task TestChangeDetectionFactoryDetectsChange()
+    public async Task TestInlineChangeDetectionDetectsChange()
     {
         MockModbusClient mockClient = new MockModbusClient();
-        SomeBmsClient bmsClient = new SomeBmsClient(mockClient, 2, 2, 480, 100);
-        BitfieldChangeDetector<SomeBmsClient> detector = SomeBmsChangeDetection.CreateDetector();
+        List<(string name, Level level)> changes = [];
+        SomeBmsClient bmsClient = new SomeBmsClient(mockClient, 2, 2, 480, 100,
+            onBitfieldChanged: (name, level) => changes.Add((name, level)));
 
-        // initial read with no errors — check twice to confirm no spurious changes
-        await bmsClient.ReadWarningsErrorsEmergenciesAsync();
-        bool called = false;
-        await detector.CheckAsync(bmsClient, (code, desc, level) =>
-        {
-            called = true;
-            return ValueTask.CompletedTask;
-        });
-        Assert.That(called, Is.False);
-
-        // introduce an error and re-read
+        // introduce an error and read
         mockClient.DiscreteInputs.Span[1] = 0b10000000; // StringTerminalDischargeOverCurrentError
         await bmsClient.ReadWarningsErrorsEmergenciesAsync();
+        Assert.That(changes, Has.Count.EqualTo(1));
+        Assert.That(changes[0].name, Is.EqualTo("StringErrors1"));
+        Assert.That(changes[0].level, Is.EqualTo(Level.Error));
 
-        Level reportedLevel = Level.None;
-        called = false;
-        await detector.CheckAsync(bmsClient, (code, desc, level) =>
-        {
-            called = true;
-            reportedLevel = level;
-            return ValueTask.CompletedTask;
-        });
-        Assert.That(called, Is.True);
-        Assert.That(reportedLevel, Is.EqualTo(Level.Error));
+        // same state again — no callback
+        changes.Clear();
+        await bmsClient.ReadWarningsErrorsEmergenciesAsync();
+        Assert.That(changes, Is.Empty);
     }
 
     [Test]
-    public async Task TestChangeDetectionFactoryReportsHighestLevel()
+    public async Task TestInlineChangeDetectionReportsHighestLevel()
     {
         MockModbusClient mockClient = new MockModbusClient();
-        SomeBmsClient bmsClient = new SomeBmsClient(mockClient, 2, 2, 480, 100);
-        BitfieldChangeDetector<SomeBmsClient> detector = SomeBmsChangeDetection.CreateDetector();
-
-        // prime the detector
-        await bmsClient.ReadWarningsErrorsEmergenciesAsync();
-        await detector.CheckAsync(bmsClient, (_, _, _) => ValueTask.CompletedTask);
+        List<(string name, Level level)> changes = [];
+        SomeBmsClient bmsClient = new SomeBmsClient(mockClient, 2, 2, 480, 100,
+            onBitfieldChanged: (name, level) => changes.Add((name, level)));
 
         // set both a warning (bit 0) and an emergency (bit 2) on StringErrors1
         mockClient.DiscreteInputs.Span[1] = 0b00000101;
         await bmsClient.ReadWarningsErrorsEmergenciesAsync();
+        Assert.That(changes, Has.Count.EqualTo(1));
+        Assert.That(changes[0].level, Is.EqualTo(Level.Emergency));
+    }
 
-        Level reportedLevel = Level.None;
-        await detector.CheckAsync(bmsClient, (code, desc, level) =>
-        {
-            reportedLevel = level;
-            return ValueTask.CompletedTask;
-        });
-        Assert.That(reportedLevel, Is.EqualTo(Level.Emergency));
+    [Test]
+    public async Task TestNoCallbackNoOverhead()
+    {
+        // constructing without callback should work fine — no change detection runs
+        MockModbusClient mockClient = new MockModbusClient();
+        SomeBmsClient bmsClient = new SomeBmsClient(mockClient, 2, 2, 480, 100);
+        mockClient.DiscreteInputs.Span[1] = 0b10000000;
+        await bmsClient.ReadWarningsErrorsEmergenciesAsync();
+        Assert.That(bmsClient.StringErrors1, Is.EqualTo(StringErrors1.StringTerminalDischargeOverCurrentError));
     }
 
     [Test]
