@@ -110,7 +110,7 @@ namespace {schema.Name};
                     if (groupHasChangeDetection)
                     {
                         hasChangeDetection = true;
-                        mainWriter.WriteLine("\t\tprivate readonly Action<string, Level>? _onBitfieldChanged;");
+                        mainWriter.WriteLine("\t\tprivate readonly Action<string, string, Level>? _onBitfieldChanged;");
                     }
                     groupFieldInitialisers.Add("_offset = offset;");
                     if (groupHasChangeDetection)
@@ -148,7 +148,7 @@ namespace {schema.Name};
 
                 if (hasChangeDetection)
                 {
-                    mainWriter.WriteLine("\tprivate readonly Action<string, Level>? _onBitfieldChanged;");
+                    mainWriter.WriteLine("\tprivate readonly Action<string, string, Level>? _onBitfieldChanged;");
                 }
                 WriteFieldsAndConstructor(schema.Name + "Client", mainWriter, bufferInitialisers, fieldInitialisers, constructorParams, hasChangeDetection: hasChangeDetection);
                 mainWriter.WriteLine("}");
@@ -169,7 +169,7 @@ namespace {schema.Name};
             }
             if (hasChangeDetection)
             {
-                mainWriter.Write(", Action<string, Level>? onBitfieldChanged = null");
+                mainWriter.Write(", Action<string, string, Level>? onBitfieldChanged = null");
             }
             mainWriter.WriteLine(")");
             mainWriter.WriteLine($"{indent}\t{{");
@@ -265,7 +265,7 @@ namespace {schema.Name};
                     {
                         mainWriter.WriteLine($"\t\t{indent}if (!current.Slice({bp.Offset}, {bp.SizeInBytes}).SequenceEqual(previous.Slice({bp.Offset}, {bp.SizeInBytes})))");
                         mainWriter.WriteLine($"\t\t{indent}{{");
-                        mainWriter.WriteLine($"\t\t\t{indent}_onBitfieldChanged!(\"{bp.PointName}\", {bp.PointName}.GetLevel());");
+                        mainWriter.WriteLine($"\t\t\t{indent}_onBitfieldChanged!(\"{bp.PointName}\", {bp.PointName}.ToString(), {bp.PointName}.GetLevel());");
                         mainWriter.WriteLine($"\t\t{indent}}}");
                     }
                     mainWriter.WriteLine($"\t\t{indent}current.CopyTo(previous);");
