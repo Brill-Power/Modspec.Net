@@ -92,9 +92,9 @@ public class Tests
     public async Task TestInlineChangeDetectionNoChange()
     {
         MockModbusClient mockClient = new MockModbusClient();
-        List<(string name, string description, Level level)> changes = [];
+        List<(string name, object oldValue, object newValue, Level level)> changes = [];
         SomeBmsClient bmsClient = new SomeBmsClient(mockClient, 2, 2, 480, 100,
-            onBitfieldChanged: (name, desc, level) => changes.Add((name, desc, level)));
+            onBitfieldChanged: (name, oldVal, newVal, level) => changes.Add((name, oldVal, newVal, level)));
 
         // no errors — no callback
         await bmsClient.ReadWarningsErrorsEmergenciesAsync();
@@ -109,16 +109,18 @@ public class Tests
     public async Task TestInlineChangeDetectionDetectsChange()
     {
         MockModbusClient mockClient = new MockModbusClient();
-        List<(string name, string description, Level level)> changes = [];
+        List<(string name, object oldValue, object newValue, Level level)> changes = [];
         SomeBmsClient bmsClient = new SomeBmsClient(mockClient, 2, 2, 480, 100,
-            onBitfieldChanged: (name, desc, level) => changes.Add((name, desc, level)));
+            onBitfieldChanged: (name, oldVal, newVal, level) => changes.Add((name, oldVal, newVal, level)));
 
         // introduce an error and read
         mockClient.DiscreteInputs.Span[1] = 0b10000000; // StringTerminalDischargeOverCurrentError
         await bmsClient.ReadWarningsErrorsEmergenciesAsync();
         Assert.That(changes, Has.Count.EqualTo(1));
         Assert.That(changes[0].name, Is.EqualTo("StringErrors1"));
-        Assert.That(changes[0].description, Does.Contain("StringTerminalDischargeOverCurrentError"));
+        Assert.That(changes[0].oldValue, Is.EqualTo((StringErrors1)0));
+        Assert.That(changes[0].newValue, Is.EqualTo(StringErrors1.StringTerminalDischargeOverCurrentError));
+        Assert.That(changes[0].newValue.ToString(), Does.Contain("StringTerminalDischargeOverCurrentError"));
         Assert.That(changes[0].level, Is.EqualTo(Level.Error));
 
         // same state again — no callback
@@ -131,9 +133,9 @@ public class Tests
     public async Task TestInlineChangeDetectionReportsHighestLevel()
     {
         MockModbusClient mockClient = new MockModbusClient();
-        List<(string name, string description, Level level)> changes = [];
+        List<(string name, object oldValue, object newValue, Level level)> changes = [];
         SomeBmsClient bmsClient = new SomeBmsClient(mockClient, 2, 2, 480, 100,
-            onBitfieldChanged: (name, desc, level) => changes.Add((name, desc, level)));
+            onBitfieldChanged: (name, oldVal, newVal, level) => changes.Add((name, oldVal, newVal, level)));
 
         // set both a warning (bit 0) and an emergency (bit 2) on StringErrors1
         mockClient.DiscreteInputs.Span[1] = 0b00000101;

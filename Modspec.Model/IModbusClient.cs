@@ -9,6 +9,15 @@ using System.Threading.Tasks;
 namespace Modspec.Model;
 
 /// <summary>
+/// Callback invoked when a bitfield point with level annotations changes between reads.
+/// </summary>
+/// <param name="name">The name of the bitfield point that changed.</param>
+/// <param name="oldValue">The previous value of the bitfield (boxed enum).</param>
+/// <param name="newValue">The current value of the bitfield (boxed enum).</param>
+/// <param name="level">The highest severity level among the currently set flags.</param>
+public delegate void BitfieldChangedCallback(string name, object oldValue, object newValue, Level level);
+
+/// <summary>
 /// Interface for a Modbus client.
 /// </summary>
 public interface IModbusClient : IDisposable

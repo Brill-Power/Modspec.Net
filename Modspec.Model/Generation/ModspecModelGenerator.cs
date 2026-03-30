@@ -110,7 +110,7 @@ namespace {schema.Name};
                     if (groupHasChangeDetection)
                     {
                         hasChangeDetection = true;
-                        mainWriter.WriteLine("\t\tprivate readonly Action<string, string, Level>? _onBitfieldChanged;");
+                        mainWriter.WriteLine("\t\tprivate readonly BitfieldChangedCallback? _onBitfieldChanged;");
                     }
                     groupFieldInitialisers.Add("_offset = offset;");
                     if (groupHasChangeDetection)
@@ -148,7 +148,7 @@ namespace {schema.Name};
 
                 if (hasChangeDetection)
                 {
-                    mainWriter.WriteLine("\tprivate readonly Action<string, string, Level>? _onBitfieldChanged;");
+                    mainWriter.WriteLine("\tprivate readonly BitfieldChangedCallback? _onBitfieldChanged;");
                 }
                 WriteFieldsAndConstructor(schema.Name + "Client", mainWriter, bufferInitialisers, fieldInitialisers, constructorParams, hasChangeDetection: hasChangeDetection);
                 mainWriter.WriteLine("}");
@@ -169,7 +169,7 @@ namespace {schema.Name};
             }
             if (hasChangeDetection)
             {
-                mainWriter.Write(", Action<string, string, Level>? onBitfieldChanged = null");
+                mainWriter.Write(", BitfieldChangedCallback? onBitfieldChanged = null");
             }
             mainWriter.WriteLine(")");
             mainWriter.WriteLine($"{indent}\t{{");
@@ -240,7 +240,10 @@ namespace {schema.Name};
                 mainWriter.WriteLine($"\t\t{indent}await _client.Read{group.Table}Async({readOffsetField}{group.BaseRegister}, {bufferName});");
                 if (groupBitfieldPoints.Count > 0)
                 {
-                    mainWriter.WriteLine($"\t\t{indent}if (_onBitfieldChanged is not null) Check{group.Name}();");
+                    mainWriter.WriteLine($"\t\t{indent}if (_onBitfieldChanged is not null)");
+                    mainWriter.WriteLine($"\t\t{indent}{{");
+                    mainWriter.WriteLine($"\t\t\t{indent}Check{group.Name}();");
+                    mainWriter.WriteLine($"\t\t{indent}}}");
                 }
                 mainWriter.WriteLine($"\t{indent}}}");
                 mainWriter.WriteLine();
@@ -250,7 +253,10 @@ namespace {schema.Name};
                 mainWriter.WriteLine($"\t\t{indent}_client.Read{group.Table}({readOffsetField}{group.BaseRegister}, {bufferName}.Span);");
                 if (groupBitfieldPoints.Count > 0)
                 {
-                    mainWriter.WriteLine($"\t\t{indent}if (_onBitfieldChanged is not null) Check{group.Name}();");
+                    mainWriter.WriteLine($"\t\t{indent}if (_onBitfieldChanged is not null)");
+                    mainWriter.WriteLine($"\t\t{indent}{{");
+                    mainWriter.WriteLine($"\t\t\t{indent}Check{group.Name}();");
+                    mainWriter.WriteLine($"\t\t{indent}}}");
                 }
                 mainWriter.WriteLine($"\t{indent}}}");
                 mainWriter.WriteLine();
@@ -265,7 +271,8 @@ namespace {schema.Name};
                     {
                         mainWriter.WriteLine($"\t\t{indent}if (!current.Slice({bp.Offset}, {bp.SizeInBytes}).SequenceEqual(previous.Slice({bp.Offset}, {bp.SizeInBytes})))");
                         mainWriter.WriteLine($"\t\t{indent}{{");
-                        mainWriter.WriteLine($"\t\t\t{indent}_onBitfieldChanged!(\"{bp.PointName}\", {bp.PointName}.ToString(), {bp.PointName}.GetLevel());");
+                        mainWriter.WriteLine($"\t\t\t{indent}{bp.PointName} oldValue = ({bp.PointName}){bp.ReadMethod}(previous.Slice({bp.Offset}, {bp.SizeInBytes}));");
+                        mainWriter.WriteLine($"\t\t\t{indent}_onBitfieldChanged!(\"{bp.PointName}\", oldValue, {bp.PointName}, {bp.PointName}.GetLevel());");
                         mainWriter.WriteLine($"\t\t{indent}}}");
                     }
                     mainWriter.WriteLine($"\t\t{indent}current.CopyTo(previous);");
@@ -403,7 +410,7 @@ namespace {schema.Name};
                 appendixWriter.WriteLine();
                 if (isFlags && masksByLevel.Count > 0)
                 {
-                    groupBitfieldPoints?.Add(new BitfieldPointInfo(point.Name, maxOffset, point.SizeInBytes));
+                    groupBitfieldPoints?.Add(new BitfieldPointInfo(point.Name, maxOffset, point.SizeInBytes, readMethod));
                     appendixWriter.WriteLine($"public static class {point.Name}Extensions");
                     appendixWriter.WriteLine("{");
                     appendixWriter.WriteLine($"\tpublic static Level GetLevel(this {point.Name} self)");
@@ -535,5 +542,5 @@ namespace {schema.Name};
     }
 
     private record ConstructorParameter(string Name, int Count);
-    private record BitfieldPointInfo(string PointName, int Offset, int SizeInBytes);
+    private record BitfieldPointInfo(string PointName, int Offset, int SizeInBytes, string ReadMethod);
 }
